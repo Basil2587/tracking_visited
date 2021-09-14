@@ -18,6 +18,17 @@ json_input = {
     }
 
 
+def test_links_url():
+    # Проверка на получении списка уникальных доменов
+    list_links = list(json_input.values())[0]
+    clean_domains = [
+        'fun.com', 'stackoverflow.com', 'ya.ru', 'samo.tk', 'funbox.ru']
+    assert sorted(clearing_links(list_links)) == sorted(clean_domains)
+
+    not_links = ['ya.', '.ya', 'ya', 'y.a']
+    assert clearing_links(not_links) == []
+
+
 def test_wrong_methods(client):
     response = client.get(POST_URL)
     assert response.status_code == 404
