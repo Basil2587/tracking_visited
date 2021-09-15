@@ -85,7 +85,7 @@ def get_visited(request):
 
 
 @api_view(['GET'])
-def manage_items(request):
+def all_visited(request):
     '''
     Функция выводит все записи БД.
     ключ/значение-время записи ссылок/уникальные домены ссылок.
@@ -97,8 +97,7 @@ def manage_items(request):
             items[key.decode("utf-8")] = redis_instance.smembers(key)
             count += 1
         response = {
-            'count': count,
-            'msg': f"Found {count} items.",
+            'msg': f"Total of {count} sessions.",
             'items': items
         }
         return Response(response, status=200)
