@@ -51,12 +51,15 @@ def save_visited_links(request):
                 record_time = round(time.time())
                 redis_instance.sadd(record_time, *clean_links)
                 return JsonResponse(data={'status': 'ok'}, status=201)
-        except KeyError:
-            error_content = 'The key should be name "links"!'
-        except Exception as e:
-            error_content = e
-        return HttpResponseBadRequest(content=error_content)
-    return HttpResponseNotFound('Only the "POST" method works!')
+        except (KeyError, Exception) as e:
+            return JsonResponse(
+                status=HttpResponseBadRequest.status_code,
+                data={'status': f'BadRequest ({e})'}
+            )
+        return JsonResponse(
+                status=HttpResponseBadRequest.status_code,
+                data={'status': f'BadRequest ({error_content})'})
+    return HttpResponseNotFound()
 
 
 @csrf_exempt
@@ -80,7 +83,10 @@ def get_visited(request):
                 status=200,
             )
         except Exception as e:
-            return HttpResponseBadRequest(content=e)
+            return JsonResponse(
+                status=HttpResponseBadRequest.status_code,
+                data={'status': f'BadRequest ({e})'}
+            )
     return HttpResponseNotFound()
 
 
