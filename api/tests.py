@@ -9,6 +9,7 @@ json_input = {
     "links": [
         "https://ya.ru",
         "https://ya.ru?q=123",
+        "https://ya.ru/fdf",
         "funbox.ru",
         "https://stackoverflow.com/questions/11828270//how-to-exit-the-vim"
         "-editor",
@@ -16,13 +17,13 @@ json_input = {
         "http://samo.tk"
         ],
     }
+clean_domains = [
+        'fun.com', 'stackoverflow.com', 'ya.ru', 'samo.tk', 'funbox.ru']
 
 
 def test_links_url():
     # Проверка на получении списка уникальных доменов
     list_links = list(json_input.values())[0]
-    clean_domains = [
-        'fun.com', 'stackoverflow.com', 'ya.ru', 'samo.tk', 'funbox.ru']
     assert sorted(clearing_links(list_links)) == sorted(clean_domains)
 
     not_links = ['ya.', '.ya', 'ya', 'y.a']
@@ -37,7 +38,7 @@ def test_wrong_methods(client):
 
 
 def test_post_check_errors(client):
-    # Проверка пост-метода на ошибки
+    # Проверка POST-метода на ошибки
     json_er_input = [
         {'linksg': ['sd.com']},  # неправельно указан ключ "links"
         None,  # пусто
@@ -94,11 +95,8 @@ def test_post_get(client):
     )
     assert response.status_code == 200
     domains = response.json()['domains']
-    assert 'ya.ru' in domains
-    assert 'funbox.ru' in domains
-    assert 'stackoverflow.com' in domains
-    assert 'fun.com' in domains
-    assert 'samo.tk' in domains
+    for all_links in clean_domains:
+        assert all_links in domains
     assert domains.count('ya.ru') == 1
 
     response = client.get(
@@ -107,8 +105,5 @@ def test_post_get(client):
     )
     assert response.status_code == 200
     domains = response.json()['domains']
-    assert 'ya.ru' not in domains
-    assert 'funbox.ru' not in domains
-    assert 'stackoverflow.com' not in domains
-    assert 'fun.com' not in domains
-    assert 'samo.tk' not in domains
+    for all_links in clean_domains:
+        assert all_links not in domains
